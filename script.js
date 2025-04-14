@@ -8,6 +8,27 @@ document.querySelectorAll('nav ul li a').forEach(anchor => {
   });
 });
 
+let userLocation = "";
+
+// Request location on page load
+function requestLocationPermission() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        userLocation = `${latitude}, ${longitude}`;
+        alert("Location access granted.");
+      },
+      (error) => {
+        alert("Location access denied. Please allow location access.");
+      }
+    );
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+requestLocationPermission(); // ✅ call the function!
+
 // Handle form submission
 const form = document.querySelector("form");
 
@@ -16,15 +37,14 @@ form.addEventListener("submit", async (e) => {
 
   const name = document.querySelector("#name").value;
   const mobile = document.querySelector("#mobile").value;
-  const location = document.querySelector("#location").value; // Directly get the location value from the input
 
-  if (!name || !mobile || !location) {
-    alert("Please fill out all fields.");
+  if (!userLocation) {
+    alert("Location not available. Please allow location permission.");
     return;
   }
 
   try {
-    const res = await fetch("https://au-backend-3.onrender.com/submit", {
+    const res = await fetch("https://au-backend-1.onrender.com/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -32,18 +52,16 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify({
         name,
         mobile_number: mobile,
-        location,
+        location: userLocation, // ✅ fixed this line
       }),
     });
 
-    const result = await res.json();
     if (res.ok) {
-      alert(result.message || "Details submitted successfully!");
+      alert("Details submitted successfully!");
+      form.reset();
     } else {
-      alert(result.message || "Submission failed. Please try again.");
+      alert("Submission failed. Please try again.");
     }
   } catch (error) {
-    console.error("Error during submission:", error);
+    console.error(error);
     alert("An error occurred while submitting the form.");
-  }
-});
