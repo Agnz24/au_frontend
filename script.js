@@ -8,26 +8,6 @@ document.querySelectorAll('nav ul li a').forEach(anchor => {
   });
 });
 
-let userLocation = "";
-
-// Request location when page loads
-function requestLocationPermission() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        userLocation = `${latitude}, ${longitude}`;
-        alert("Location access granted.");
-      },
-      (error) => {
-        alert("Location access denied. Please allow location access.");
-      }
-    );
-  } else {
-    alert("Geolocation is not supported by this browser.");
-  }
-}
-
 // Handle form submission
 const form = document.querySelector("form");
 
@@ -36,9 +16,10 @@ form.addEventListener("submit", async (e) => {
 
   const name = document.querySelector("#name").value;
   const mobile = document.querySelector("#mobile").value;
+  const location = document.querySelector("#location").value; // Directly get the location value from the input
 
-  if (!userLocation) {
-    alert("Location not available. Please allow location permission.");
+  if (!name || !mobile || !location) {
+    alert("Please fill out all fields.");
     return;
   }
 
@@ -49,17 +30,20 @@ form.addEventListener("submit", async (e) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name, mobile_number: mobile, location: userLocation // Use userLocation instead of location
+        name,
+        mobile_number: mobile,
+        location,
       }),
     });
 
+    const result = await res.json();
     if (res.ok) {
-      alert("Details submitted successfully!");
+      alert(result.message || "Details submitted successfully!");
     } else {
-      alert("Submission failed. Please try again.");
+      alert(result.message || "Submission failed. Please try again.");
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error during submission:", error);
     alert("An error occurred while submitting the form.");
   }
 });
