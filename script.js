@@ -49,9 +49,7 @@ form.addEventListener("submit", async (e) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name,
-        mobile_number: mobile,
-        location: userLocation,
+        name, mobile_number: mobile, location
       }),
     });
 
