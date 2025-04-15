@@ -16,7 +16,7 @@ function requestLocationPermission() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        userLocation = ${latitude}, ${longitude};
+        userLocation = `${latitude}, ${longitude}`;  // ✅ FIXED: used backticks
         alert("Location access granted.");
       },
       (error) => {
@@ -27,7 +27,8 @@ function requestLocationPermission() {
     alert("Geolocation is not supported by this browser.");
   }
 }
-requestLocationPermission(); // ✅ call the function!
+
+window.onload = requestLocationPermission;  // ✅ better than using onload in HTML
 
 // Handle form submission
 const form = document.querySelector("form");
@@ -35,8 +36,8 @@ const form = document.querySelector("form");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = document.querySelector("#name").value;
-  const mobile = document.querySelector("#mobile").value;
+  const name = document.querySelector("#name").value.trim();
+  const mobile = document.querySelector("#mobile").value.trim();
 
   if (!userLocation) {
     alert("Location not available. Please allow location permission.");
@@ -52,16 +53,18 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify({
         name,
         mobile_number: mobile,
-        location: userLocation, // ✅ fixed this line
+        location: userLocation,
       }),
     });
 
     if (res.ok) {
-      alert("Details submitted successfully!");
+      alert("✅ Details submitted successfully!");
       form.reset();
     } else {
-      alert("Submission failed. Please try again.");
+      alert("❌ Submission failed. Please try again.");
     }
   } catch (error) {
     console.error(error);
-    alert("An error occurred while submitting the form."); 
+    alert("An error occurred while submitting the form.");
+  }
+});
