@@ -1,80 +1,67 @@
-let userLocation = "";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anonymous Unanimous</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#introduction">INTRODUCTION</a></li>
+        <li><a href="#services">SERVICES</a></li>
+        <li><a href="#steps">STEPS</a></li>
+        <li><a href="#register" class="register-btn">REGISTER</a></li>
+      </ul>
+    </nav>
+  </header>
 
-// Request user location
-function requestLocationPermission() {
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        userLocation = `${latitude},${longitude}`;
-        console.log("Location access granted:", userLocation);
-        alert("Location access granted.");
-      },
-      (error) => {
-        console.warn("Location access denied:", error.message);
-        alert("Please allow location access for accurate registration.");
-      }
-    );
-  } else {
-    alert("Geolocation is not supported by your browser.");
-  }
-}
+  <section id="introduction" class="section">
+    <h1>ANONYMOUS UNANIMOUS</h1>
+    <p>
+      Anonymous Unanimous enables individuals in a community to seek help from their neighbors via SMS. Initially, the individual scans a QR code that directs them to this website, where they can enter their name, mobile number, and location. These details are then stored in a database. When the individual needs assistance, they can send a message to the specified number on the website and the middleman server will forward the message to all registered users in the same location, ensuring help reaches those in need efficiently.
+    </p>
+  </section>
 
-// Run after DOM fully loads
-document.addEventListener("DOMContentLoaded", () => {
-  requestLocationPermission();
+  <section id="services" class="section">
+    <h2>OUR SERVICES</h2>
+    <p>
+      <strong>1. User Registration via QR Code:</strong><br>
+      • Individuals can scan a QR code to access the registration website.<br>
+      • They enter their name, phone number, and location, which is stored in a database.<br>
+      <strong>2. SMS-Based Help Request:</strong><br>
+      • Users can send an SMS to a specific number when they need assistance.<br>
+      • No internet is required, making it accessible in remote areas.<br>
+      <strong>3. No installation of any app</strong><br>
+      <strong>4. Location-Based Filtering:</strong><br>
+      • Messages are sent only to registered users in the same location, ensuring relevant help.<br>
+      <strong>5. Profanity Filtering:</strong><br>
+      • The system checks messages for inappropriate language before forwarding them.<br>
+    </p>
+  </section>
 
-  // Smooth scroll
-  document.querySelectorAll('nav ul li a').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      document.querySelector(this.getAttribute('href')).scrollIntoView({
-        behavior: 'smooth'
-      });
-    });
-  });
+  <section id="steps" class="section">
+    <h2>HOW IT WORKS</h2>
+    <p>
+      <strong>Step 1:</strong> Register using your name and mobile number.<br>
+      <strong>Step 2:</strong> A specified number will be generated for you.<br>
+      <strong>Step 3:</strong> Save this specified number on your mobile.<br>
+      <strong>Step 4:</strong> Use this number to communicate to us via messages.<br>
+      <strong>Step 5:</strong> Allow location permissions for an optimized experience.
+    </p>
+  </section>
 
-  const form = document.querySelector("#register-form");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.querySelector("#name").value.trim();
-    const mobile = document.querySelector("#mobile").value.trim();
-
-    if (!name || !mobile) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    if (!userLocation) {
-      alert("Location not available. Please allow location permission.");
-      return;
-    }
-
-    try {
-      const res = await fetch("https://au-backend-1.onrender.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          mobile_number: mobile,
-          location: userLocation,
-        }),
-      });
-
-      if (res.ok) {
-        alert("Details submitted successfully!");
-        form.reset();
-      } else {
-        const errorData = await res.json();
-        alert("Submission failed: " + (errorData.message || "Unknown error"));
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("An error occurred while submitting the form.");
-    }
-  });
-});
+  <section id="register" class="section">
+    <h2>REGISTER NOW</h2>
+    <form id="register-form">
+      <input type="text" id="name" placeholder="Your Name" required />
+      <input type="tel" id="mobile" placeholder="Mobile Number" required />
+      <div class="number-box">Your Unique Number: <span id="uniqueNumber">9876543210</span></div>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+</body>
+</html>
