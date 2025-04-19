@@ -10,25 +10,14 @@ document.querySelectorAll('nav ul li a').forEach(anchor => {
 
 let userLocation = "";
 
-// Request location on page load
-async function requestLocationPermission() {
+// Request geolocation on page load
+function requestLocationPermission() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
+      (position) => {
         const { latitude, longitude } = position.coords;
-
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-          );
-          const data = await response.json();
-          userLocation = data.display_name || `${latitude}, ${longitude}`;
-          alert("Location access granted: " + userLocation);
-        } catch (error) {
-          console.error("Reverse geocoding failed:", error);
-          userLocation = `${latitude}, ${longitude}`;
-          alert("Location access granted (coordinates only).");
-        }
+        userLocation = `${latitude}, ${longitude}`; // lat,lng string
+        alert("Location access granted: " + userLocation);
       },
       (error) => {
         alert("Location access denied. Please allow location access.");
@@ -38,7 +27,6 @@ async function requestLocationPermission() {
     alert("Geolocation is not supported by this browser.");
   }
 }
-
 window.onload = requestLocationPermission;
 
 // Handle form submission
@@ -47,7 +35,7 @@ const form = document.querySelector("form");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = document.querySelector("#name").value.trim();
+  const name  = document.querySelector("#name").value.trim();
   const mobile = document.querySelector("#mobile").value.trim();
 
   if (!userLocation) {
@@ -57,25 +45,21 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const res = await fetch("https://au-backend-1.onrender.com/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-        mobile_number: mobile,
-        location: userLocation,
-      }),
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ name, mobile_number: mobile, location: userLocation })
     });
 
     if (res.ok) {
       alert("✅ Details submitted successfully!");
       form.reset();
     } else {
-      alert("❌ Submission failed. Please try again.");
+      const err = await res.json();
+      console.error("Server error:", err);
+      alert("❌ Submission failed. " + (err.message || "Please try again."));
     }
   } catch (error) {
-    console.error(error);
+    console.error("Network error:", error);
     alert("An error occurred while submitting the form.");
   }
 });
