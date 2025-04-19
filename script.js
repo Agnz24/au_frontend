@@ -45,7 +45,7 @@ form.addEventListener("submit", async (e) => {
   }
 
   try {
-    const res = await fetch("https://au-backend-1.onrender.com/submit", {
+    const res = await fetch("https://au-backend-2.onrender.com/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
