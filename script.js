@@ -10,14 +10,25 @@ document.querySelectorAll('nav ul li a').forEach(anchor => {
 
 let userLocation = "";
 
-// Request location
-function requestLocationPermission() {
+// Request location on page load
+async function requestLocationPermission() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
-        userLocation = `${latitude}, ${longitude}`;
-        alert("Location access granted.");
+
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          );
+          const data = await response.json();
+          userLocation = data.display_name || `${latitude}, ${longitude}`;
+          alert("Location access granted: " + userLocation);
+        } catch (error) {
+          console.error("Reverse geocoding failed:", error);
+          userLocation = `${latitude}, ${longitude}`;
+          alert("Location access granted (coordinates only).");
+        }
       },
       (error) => {
         alert("Location access denied. Please allow location access.");
@@ -30,7 +41,7 @@ function requestLocationPermission() {
 
 window.onload = requestLocationPermission;
 
-// Form submission
+// Handle form submission
 const form = document.querySelector("form");
 
 form.addEventListener("submit", async (e) => {
@@ -45,7 +56,7 @@ form.addEventListener("submit", async (e) => {
   }
 
   try {
-    const res = await fetch("https://au-backend-2.onrender.com/submit", {
+    const res = await fetch("https://au-backend-1.onrender.com/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
