@@ -10,13 +10,13 @@ document.querySelectorAll('nav ul li a').forEach(anchor => {
 
 let userLocation = "";
 
-// Request location on page load
+// Request location
 function requestLocationPermission() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        userLocation = `${latitude}, ${longitude}`;  // ✅ FIXED: used backticks
+        userLocation = `${latitude}, ${longitude}`;
         alert("Location access granted.");
       },
       (error) => {
@@ -28,9 +28,9 @@ function requestLocationPermission() {
   }
 }
 
-window.onload = requestLocationPermission;  // ✅ better than using onload in HTML
+window.onload = requestLocationPermission;
 
-// Handle form submission
+// Form submission
 const form = document.querySelector("form");
 
 form.addEventListener("submit", async (e) => {
